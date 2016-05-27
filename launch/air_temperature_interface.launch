@@ -1,0 +1,8 @@
+
+<launch>
+   <node name="CouchDBRetriever" pkg="pfc" type="CouchRetriever.py"
+    	 args="$(arg IP) $(arg PORT) environmental_data_point air_temperature $(arg FREQ) $(arg PFCNAME)"/>
+
+   <node name="CouchDBFeeder" pkg="pfc" type="CouchFeederBinary.py"
+	 args="/PFC_$(arg PFCNAME)/actuators/heater $(arg IP) $(arg PORT) heater-1"/>
+</launch>
