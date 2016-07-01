@@ -21,16 +21,42 @@ mkdir ~/ros_catkin_ws
 cd ~/ros_catkin_ws
 
 # Install ROS_COMM distribution
-rosinstall_generator ros_comm usb_cam pid --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
+rosinstall_generator ros_comm usb_cam cv_bridge image_transport --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
 wstool init src indigo-ros_comm-wet.rosinstall
 
 # Install external dependencies
-sudo apt-get -y install libconsole-bridge-dev liblz4-dev
+sudo apt-get -y install libconsole-bridge-dev liblz4-dev libtheora-bin libtheora-dev
+
+# Install ffmpeg for mjpeg compression
+cd /usr/local/src
+sudo git clone https://github.com/mirror/x264
+sudo chown -R pi x264
+cd x264
+./configure --host=arm-unknown-linux-gnueabi --enable-static --enable-shared --disable-opencl --enable-pic
+make
+sudo make install
+
+cd /usr/local/src
+sudo git clone https://github.com/FFmpeg/FFmpeg.git
+sudo chown -R pi FFmpeg
+cd FFmpeg
+./configure --arch=armel --target-os=linux --enable-gpl --enable-libtheora --enable-libx264 --enable-nonfree --enable-pic
+make
+sudo make install
+
+# Adding swap space
+sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+sudo mkswap /swapfile
+sudo swapon /swapfile
 
 # Build and install packages into final directory
 cd ~/ros_catkin_ws
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
+
+# Delete swap file
+sudo swapoff /swapfile
+sudo rm /swapfile
 
 # Source shell interpreter
 source /opt/ros/indigo/setup.bash
