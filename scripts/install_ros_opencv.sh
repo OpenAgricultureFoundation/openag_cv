@@ -56,7 +56,7 @@ cd ~/ros_catkin_ws
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
 
 # Move modified usb_cam_node
-cp $BASEDIR/../src/usb_cam/usb_cam_node.cpp ~/ros_catkin_ws/src/usb_cam/src/
+cp $BASEDIR/../src/usb_cam/usb_cam.cpp ~/ros_catkin_ws/src/usb_cam/src/
 
 # Compile and install final version
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
