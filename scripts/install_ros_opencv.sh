@@ -57,7 +57,7 @@ rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debia
 
 # Move modified usb_cam and CMakeLists
 cp $BASEDIR/../src/usb_cam/usb_cam.cpp ~/ros_catkin_ws/src/usb_cam/src/
-cp $BASEDIR/../src/usb_cam/CMakeLists.txt ~/ros_catkin_ws/src/usb_cam/src/
+cp $BASEDIR/../src/usb_cam/CMakeLists.txt ~/ros_catkin_ws/src/usb_cam/
 
 # Compile and install final version
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
