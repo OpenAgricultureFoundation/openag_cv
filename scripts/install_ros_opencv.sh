@@ -1,5 +1,7 @@
 #/usr/bin/bash
 
+BASEDIR=`pwd`
+
 # Getting ROS sources
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu jessie main" > /etc/apt/sources.list.d/ros-latest.list'
 wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
@@ -49,10 +51,14 @@ sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
 sudo mkswap /swapfile
 sudo swapon /swapfile
 
-# Build and install packages into final directory
+# Build and install dependencies
 cd ~/ros_catkin_ws
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
-cp ../src/usb_cam/usb_cam_node.cpp ~/ros_catkin_ws/src/usb_cam/src/
+
+# Move modified usb_cam_node
+cp $BASEDIR/../src/usb_cam/usb_cam_node.cpp ~/ros_catkin_ws/src/usb_cam/src/
+
+# Compile and install final version
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
 
 # Delete swap file
