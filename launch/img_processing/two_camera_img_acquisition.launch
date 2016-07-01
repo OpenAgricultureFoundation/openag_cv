@@ -1,11 +1,11 @@
 <launch>
-  <arg name="frequency" default="10800"/>
-  <arg name="framerate" default="9"/>
+  <arg name="frequency" default="3600"/>
+  <arg name="framerate" default="30"/>
   <arg name="width" default="1280"/>
   <arg name="height" default="960"/>
 
   <group ns="cameras">
-    <node name="top" pkg="usb_cam" type="usb_cam_node">
+    <node name="left" pkg="usb_cam" type="usb_cam_node">
       <param name="video_device" value="/dev/video0" />
       <param name="image_width" value="$(arg width)" />
       <param name="image_height" value="$(arg height)" />
@@ -13,12 +13,10 @@
       <param name="framerate" value="$(arg framerate)" />
       <param name="camera_frame_id" value="camera0" />
       <param name="camera_name" value="top"/>
-      <param name="autofocus" value="true"/>
-      <param name="sharpness" value="100"/>
       <param name="io_method" value="mmap"/>
     </node>
 
-    <node name="side" pkg="usb_cam" type="usb_cam_node">
+    <node name="right" pkg="usb_cam" type="usb_cam_node">
       <param name="video_device" value="/dev/video1" />
       <param name="image_width" value="$(arg width)" />
       <param name="image_height" value="$(arg height)" />
@@ -26,19 +24,9 @@
       <param name="framerate" value="$(arg framerate)" />
       <param name="camera_frame_id" value="camera1" />
       <param name="camera_name" value="side" />
-      <param name="autofocus" value="true"/>
-      <param name="sharpness" value="100"/>
       <param name="io_method" value="mmap"/>
     </node>
   </group>
 
-  <node name="camera_top_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
-	args="$(arg frequency) /cameras/top/image_raw"/>
-  
-  <node name="camera_side_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
-	args="$(arg frequency) /cameras/side/image_raw"/>
-
-  <node pkg="rosbag" type="record" name="record" output="screen" 
-   	args="/cameras/top/image_raw_shot /cameras/side/image_raw_shot"/>
-
+ 
 </launch>
