@@ -2,7 +2,7 @@
 
   <arg name="rosbag_file"/>
   <arg name="topic_name"/>
-  <arg name="folder_name" default="~/.ros"/>
+  <arg name="folder_name" default="$HOME/.ros"/>
   <arg name="speed" default="100"/>
   <arg name="format" default="png"/>
   
