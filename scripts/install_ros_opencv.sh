@@ -52,6 +52,7 @@ sudo swapon /swapfile
 # Build and install packages into final directory
 cd ~/ros_catkin_ws
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
+cp ../src/usb_cam/usb_cam_node.cpp ~/ros_catkin_ws/src/usb_cam/src/
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
 
 # Delete swap file
