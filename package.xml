@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>pfc</name>
+  <name>openag_ros</name>
   <version>0.0.0</version>
-  <description>The pfc package</description>
+  <description>The openag_ros package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="parallels@todo.todo">parallels</maintainer>
+  <maintainer email="edcafenet@gmail.com">parallels</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/pfc</url> -->
+  <!-- <url type="website">http://wiki.ros.org/openag_ros</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
