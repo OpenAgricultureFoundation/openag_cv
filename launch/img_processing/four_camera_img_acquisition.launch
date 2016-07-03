@@ -1,6 +1,5 @@
 <launch>
-  <arg name="frequency" default="10800"/>
-  <arg name="framerate" default="9"/>
+  <arg name="framerate" default="1"/>
   <arg name="width" default="1280"/>
   <arg name="height" default="960"/>
 
@@ -58,16 +57,5 @@
       <param name="sharpness" value="100"/>
       <param name="io_method" value="mmap"/>
     </node>
-
   </group>
-
-  <node name="camera_top_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
-	args="$(arg frequency) /cameras/top/image_raw"/>
-  
-  <node name="camera_side_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
-	args="$(arg frequency) /cameras/side/image_raw"/>
-
-  <node pkg="rosbag" type="record" name="record" output="screen" 
-   	args="/cameras/top/image_raw_shot /cameras/side/image_raw_shot"/>
-
 </launch>

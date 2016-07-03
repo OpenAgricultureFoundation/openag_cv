@@ -1,0 +1,19 @@
+<launch>
+
+  <arg name="frequency" default="3600"/>
+  <arg name="framerate" default="1"/>
+  <arg name="width" default="1280"/>
+  <arg name="height" default="960"/>
+
+  <include file="$(find roslaunch)/stereo_camera_img_acquisition.launch" />
+
+  <node name="camera_left_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
+	args="$(arg frequency) /cameras/left/image_raw"/>
+  
+  <node name="camera_right_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
+	args="$(arg frequency) /cameras/right/image_raw"/>
+
+  <node pkg="rosbag" type="record" name="record" output="screen" 
+   	args="/cameras/left/image_raw_shot /cameras/right/image_raw_shot"/>
+
+</launch>
