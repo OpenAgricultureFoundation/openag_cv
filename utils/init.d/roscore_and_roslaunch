@@ -1,0 +1,44 @@
+#! /bin/bash
+# /etc/init.d/roscore
+source /home/robolab/ros_ws/setup.bash
+export ROS_PACKAGE_PATH=/home/robolab/ros_ws:$ROS_PACKAGE_PATH
+export ROS_HOSTNAME=plantos.media.mit.edu
+
+# initialze the pidfile
+ROSCORE_PIDFILE='/var/run/roscore.pid'
+# or alternativ use
+#ROSCORE_PIDFILE='/home/robolab/roscore.pid'
+ROS_USER=$USER
+touch $ROSCORE_PIDFILE
+/bin/chown $ROS_USER\:$ROS_USER $ROSCORE_PIDFILE
+
+# roslaunch vars
+ROSLAUNCH_BIN="/opt/ros/indigo/ros_catkin_ws/install_isolated/bin/roslaunch"
+ROSLAUNCH_ARGS="--pid=$ROSCORE_PIDFILE"
+
+# set path to launchfile
+# just in case you want to launch a .launch file at the beginning
+ROSLAUNCH_FILE=".../.launch"
+# carry out specific functions when asked by the system
+
+case "$1" in
+  start)
+    echo "Starting roscore service ..."
+    su -c "$ROSLAUNCH_BIN $ROSLAUNCH_ARGS $ROSLAUNCH_FILE" $ROS_USER &
+    ;;  
+  stop)
+    kill -2 $(cat $ROSCORE_PIDFILE) > /dev/null
+    echo -n "" > $ROSCORE_PIDFILE
+    echo "Stopping roscore services ..."
+    ;;  
+  restart)
+    $0 stop
+    sleep 3
+    $0 start
+    ;;  
+  *)  
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;  
+esac
+exit 0

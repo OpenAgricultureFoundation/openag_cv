@@ -1,0 +1,22 @@
+#! /bin/bash
+# /etc/init.d/roscore
+
+start_roscore () {
+    
+    echo "Starting ROSCORE"
+    source /opt/ros/indigo/setup.sh
+    roscore & disown
+    until rostopic list ; do sleep 1; done
+}
+
+stop_roscore () {
+    source /opt/ros/indigo/setup.sh
+
+    #killall nodes
+    for i in $( rosnode list ); do
+    rosnode kill $i;
+    done
+
+    #stop roscore
+    killall roscore
+}
