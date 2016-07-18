@@ -1,22 +1,77 @@
-#! /bin/bash
+#!/bin/bash
+#
 # /etc/init.d/roscore
+# Subsystem file for "Roscore" server
+#
+# chkconfig: 2345 95 05	(1)
+# description: Roscore server daemon
+#
+# processname: Roscore
+# config: /etc/Roscore/roscore.conf
+# config: /etc/sysconfig/roscore
+# pidfile: /var/run/Roscore.pid
 
-start_roscore () {
-    
-    echo "Starting ROSCORE"
-    source /opt/ros/indigo/setup.sh
-    roscore & disown
-    until rostopic list ; do sleep 1; done
+# pull in sysconfig settings
+[ -f /etc/sysconfig/roscore ] && . /etc/sysconfig/roscore 
+
+RETVAL=0
+prog="roscore"
+
+start() {	
+	echo -n $"Starting $prog:"
+
+	source /opt/ros/indigo/setup.bash
+	roscore &
+	
+	RETVAL=$?
+	[ "$RETVAL" = 0 ] && touch /var/lock/subsys/$prog
+	echo
 }
 
-stop_roscore () {
-    source /opt/ros/indigo/setup.sh
+stop() {	
+	echo -n $"Stopping $prog:"
 
-    #killall nodes
-    for i in $( rosnode list ); do
-    rosnode kill $i;
-    done
-
-    #stop roscore
-    killall roscore
+	pkill roscore
+	
+	killproc $prog -TERM
+	RETVAL=$?
+	[ "$RETVAL" = 0 ] && rm -f /var/lock/subsys/$prog
+	echo
 }
+
+reload() {	
+	echo -n $"Reloading $prog:"
+	killproc $prog -HUP
+	RETVAL=$?
+	echo
+}
+
+case "$1" in	
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		start
+		;;
+	reload)
+		reload
+		;;
+	condrestart)
+		if [ -f /var/lock/subsys/$prog ] ; then
+			stop
+			# avoid race
+			sleep 3
+			start
+		fi
+		;;
+	status)
+		status $prog
+		RETVAL=$?
+		echo $"Usage: $0 {start|stop|restart|reload|condrestart|status}"
+		RETVAL=1
+esac
+exit $RETVAL
