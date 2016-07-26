@@ -63,9 +63,13 @@ class CV():
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
+        # Get Parameters from ROS interface
+        MinThreshold = rospy.get_param('~MinThreshold')
+        MaxThreshold = rospy.get_param('~MaxThreshold')
+        
         # perform edge detection, then perform a dilation + erosion to
         # close gaps in between object edges
-        edged = cv2.Canny(gray, 45, 100)
+        edged = cv2.Canny(gray, MinThreshold, MaxThreshold)
         edged = cv2.dilate(edged, None, iterations=1)
         edged = cv2.erode(edged, None, iterations=1)
 
@@ -78,6 +82,7 @@ class CV():
         # 'pixels per metric' calibration variable
         (cnts, _) = contours.sort_contours(cnts)
 
+        # Initialization of the 'pixels per metric variable'
         pixelsPerMetric = None
 
         # compute the rotated bounding box of the contour
@@ -137,17 +142,18 @@ class CV():
                 # compute it as the ratio of pixels to supplied metric
                 # (in this case, inches)
                 if pixelsPerMetric is None:
-	                pixelsPerMetric = dB / 2
+                        ReferenceMeasure = rospy.get_param('~ReferenceMeasure')
+	                pixelsPerMetric = dB / ReferenceMeasure
 
                 # compute the size of the object
                 dimA = dA / pixelsPerMetric
                 dimB = dB / pixelsPerMetric
 
                 # draw the object sizes on the frame
-                cv2.putText(processed_frame, "{:.1f}in".format(dimA),
+                cv2.putText(processed_frame, "{:.1f}mm".format(dimA),
 		            (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
 		            0.65, (255, 255, 255), 2)
-                cv2.putText(processed_frame, "{:.1f}in".format(dimB),
+                cv2.putText(processed_frame, "{:.1f}mm".format(dimB),
 		            (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
 		            0.65, (255, 255, 255), 2)
 

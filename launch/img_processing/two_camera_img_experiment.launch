@@ -1,17 +1,27 @@
 <launch>
 
+  <!-- variables related to image acquisition -->
   <arg name="framerate" default="1"/>
   <arg name="width" default="1280"/>
   <arg name="height" default="960"/>
   <arg name="camera_model" default="elp1_3"/>
 
+  <!-- variables related to image processing and OpenCV -->
+  <arg name="ObjectMeasurerInputTopic" value="/cameras"/>
+  <arg name="ObjectMeasurerImageTopic" value="/image_rect_color"/>
+
+  <!-- definition of machines involved -->
+  <machine name="PlantOS" address="PlantOS"
+	   env-loader="/opt/ros/indigo/env.sh"
+	   user="eddie"/>
   <machine name="Dionysus" address="Dionysus"
 	   env-loader="/opt/ros/indigo/env.sh"
 	   user="eddie"/>
   <machine name="Chloris" address="Chloris"
 	   env-loader="/opt/ros/indigo/env.sh"
 	   user="eddie"/>
-  
+
+  <!-- cameras -->
   <group ns="cameras">
     <node machine="Dionysus" name="top" pkg="usb_cam" type="usb_cam_node">
       <param name="video_device" value="/dev/video0" />
@@ -39,8 +49,18 @@
 	     value="file://$(find openag_ros)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
     </node>
   </group>
-  
+
+  <!-- image rectification -->  
   <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/top"/>
   <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/side"/>
 
+  <!-- image processing : Object Measurer -->    
+  <include file="$(find
+		 openag_ros)/launch/img_processing/two_camera_img_processing.launch">
+
+    <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
+    <arg name="image" value="$(arg ObjectMeasurerImageTopic)"/>
+  </include>
+	   
+  
 </launch>
