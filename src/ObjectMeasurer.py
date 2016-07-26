@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # import the necessary packages
-
 import roslib
 import rospy
 import sys
@@ -32,7 +31,7 @@ class CV():
         # Subscribe to the camera image topics and set
         # the appropriate callbacks
         self.image_sub = rospy.Subscriber(argv[1], Image, self.image_callback)        
-        self.image_pub = rospy.Publisher("%s_ObjectMeasurer" % (argv[1]), Image, queue_size=10)
+        self.image_pub = rospy.Publisher("%s/ObjectMeasurer" % (argv[1]), Image, queue_size=10)
 
         rospy.loginfo("Waiting for image topics...")
 
@@ -61,7 +60,6 @@ class CV():
             print(e)
                 
     def process_image(self, frame):
-
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (7, 7), 0)
 
@@ -83,7 +81,7 @@ class CV():
         pixelsPerMetric = None
 
         # compute the rotated bounding box of the contour
-        orig = frame.copy()
+        processed_frame = frame.copy()
 
         # loop over the contours individually
         for c in cnts:
@@ -92,7 +90,6 @@ class CV():
 	                continue
 
                 # compute the rotated bounding box of the contour
-                # orig = frame.copy()
                 box = cv2.minAreaRect(c)
                 box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
                 box = np.array(box, dtype="int")
@@ -102,11 +99,11 @@ class CV():
                 # order, then draw the outline of the rotated bounding
                 # box
                 box = perspective.order_points(box)
-                cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+                cv2.drawContours(processed_frame, [box.astype("int")], -1, (0, 255, 0), 2)
     
-                # loop over the original points and draw them
+                # loop over the processed_frame points and draw them
                 for (x, y) in box:
-                        cv2.circle(orig, (int(x), int(y)), 5, (0, 0, 255), -1)
+                        cv2.circle(processed_frame, (int(x), int(y)), 5, (0, 0, 255), -1)
             
                 # unpack the ordered bounding box, then compute the midpoint
                 # between the top-left and top-right coordinates, followed by
@@ -121,15 +118,15 @@ class CV():
                 (trbrX, trbrY) = self.midpoint(tr, br)
                 
                 # draw the midpoints on the frame
-                cv2.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-                cv2.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-                cv2.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-                cv2.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+                cv2.circle(processed_frame, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+                cv2.circle(processed_frame, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+                cv2.circle(processed_frame, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+                cv2.circle(processed_frame, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
                 
                 # draw lines between the midpoints
-                cv2.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
+                cv2.line(processed_frame, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
 	                 (255, 0, 255), 2)
-                cv2.line(orig, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
+                cv2.line(processed_frame, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
 	                 (255, 0, 255), 2)
 
                 # compute the Euclidean distance between the midpoints
@@ -147,14 +144,14 @@ class CV():
                 dimB = dB / pixelsPerMetric
 
                 # draw the object sizes on the frame
-                cv2.putText(orig, "{:.1f}in".format(dimA),
+                cv2.putText(processed_frame, "{:.1f}in".format(dimA),
 		            (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
 		            0.65, (255, 255, 255), 2)
-                cv2.putText(orig, "{:.1f}in".format(dimB),
+                cv2.putText(processed_frame, "{:.1f}in".format(dimB),
 		            (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
 		            0.65, (255, 255, 255), 2)
 
-        return orig
+        return processed_frame
 
     def cleanup(self):
         print "Shutting down vision node."
