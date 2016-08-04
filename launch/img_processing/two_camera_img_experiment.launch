@@ -59,8 +59,15 @@
 		 openag_ros)/launch/img_processing/two_camera_img_processing.launch">
 
     <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
+    <arg name="position" value="/top"/>
     <arg name="image" value="$(arg ObjectMeasurerImageTopic)"/>
   </include>
-	   
-  
+
+  <include file="$(find
+		 openag_ros)/launch/img_processing/two_camera_img_processing.launch">
+
+    <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
+    <arg name="position" value="/side"/>
+    <arg name="image" value="$(arg ObjectMeasurerImageTopic)"/>
+  </include>
 </launch>
