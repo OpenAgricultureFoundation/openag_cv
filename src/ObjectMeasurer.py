@@ -61,8 +61,8 @@ class CV():
                 
     def process_image(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (7, 7), 0)
-
+        gray = cv2.medianBlur(gray,5)
+        
         # Get Parameters from ROS interface
         MinThreshold = rospy.get_param('~MinThreshold')
         MaxThreshold = rospy.get_param('~MaxThreshold')
@@ -70,8 +70,9 @@ class CV():
         # perform edge detection, then perform a dilation + erosion to
         # close gaps in between object edges
         edged = cv2.Canny(gray, MinThreshold, MaxThreshold)
-        edged = cv2.dilate(edged, None, iterations=1)
-        edged = cv2.erode(edged, None, iterations=1)
+
+        kernel = np.ones((3,3),np.uint8)
+        edged = cv2.dilate(edged, kernel, iterations=1)
 
         # find contours in the edge map
         cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
@@ -81,7 +82,7 @@ class CV():
         # sort the contours from left-to-right and initialize the
         # 'pixels per metric' calibration variable
         (cnts, _) = contours.sort_contours(cnts)
-
+        
         # Initialization of the 'pixels per metric variable'
         pixelsPerMetric = None
 
@@ -91,8 +92,8 @@ class CV():
         # loop over the contours individually
         for c in cnts:
                 # if the contour is not sufficiently large, ignore it
-                if cv2.contourArea(c) < 100:
-	                continue
+                if cv2.contourArea(c) < 1000:
+	            continue
 
                 # compute the rotated bounding box of the contour
                 box = cv2.minAreaRect(c)
@@ -102,13 +103,14 @@ class CV():
                 # order the points in the contour such that they appear
                 # in top-left, top-right, bottom-right, and bottom-left
                 # order, then draw the outline of the rotated bounding
+                
                 # box
                 box = perspective.order_points(box)
                 cv2.drawContours(processed_frame, [box.astype("int")], -1, (0, 255, 0), 2)
     
                 # loop over the processed_frame points and draw them
                 for (x, y) in box:
-                        cv2.circle(processed_frame, (int(x), int(y)), 5, (0, 0, 255), -1)
+                    cv2.circle(processed_frame, (int(x), int(y)), 5, (0, 0, 255), -1)
             
                 # unpack the ordered bounding box, then compute the midpoint
                 # between the top-left and top-right coordinates, followed by

@@ -1,15 +1,20 @@
 <launch>
-
   <arg name="topic" default="/cameras"/>
-    <arg name="position" default=""/>
-  <arg name="image" default="/image_rect_color"/>
+  <arg name="position" default=""/>
+  <arg name="image" default=""/>
   
   <group ns="$(arg topic)$(arg position)$(arg image)">
     <node name="ObjectMeasurer" pkg="openag_ros" type="ObjectMeasurer.py"
 	  args="$(arg topic)$(arg position)$(arg image)">
-      <param name="MinThreshold" value="45"/>
-      <param name="MaxThreshold" value="100"/>
+      <param name="MinThreshold" value="200"/>
+      <param name="MaxThreshold" value="255"/>
       <param name="ReferenceMeasure" value="20"/>      
+    </node>    
+
+    <node name="EdgeDetector" pkg="openag_ros" type="EdgeDetector.py"
+	  args="$(arg topic)$(arg position)$(arg image)">
+            <param name="MinThreshold" value="200"/>
+	    <param name="MaxThreshold" value="255"/>
     </node>    
   </group>  
 </launch>
