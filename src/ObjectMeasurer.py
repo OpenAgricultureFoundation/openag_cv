@@ -32,8 +32,10 @@ class CV():
         # the appropriate callbacks
         self.image_sub = rospy.Subscriber(argv[1], Image, self.image_callback)        
         self.image_pub = rospy.Publisher("%s/ObjectMeasurer" % (argv[1]), Image, queue_size=10)
-
         rospy.loginfo("Waiting for image topics...")
+
+        # Initialization of the 'pixels per metric variable'
+        self.pixelsPerMetric = None
 
     def midpoint(self, ptA, ptB):
 	return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
@@ -66,6 +68,7 @@ class CV():
         # Get Parameters from ROS interface
         MinThreshold = rospy.get_param('~MinThreshold')
         MaxThreshold = rospy.get_param('~MaxThreshold')
+        MinAreaThreshold = rospy.get_param('~MinAreaThreshold')
         
         # perform edge detection, then perform a dilation + erosion to
         # close gaps in between object edges
@@ -76,88 +79,88 @@ class CV():
 
         # find contours in the edge map
         cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
-	                        cv2.CHAIN_APPROX_SIMPLE)
+	                        cv2.CHAIN_APPROX_NONE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
 
         # sort the contours from left-to-right and initialize the
         # 'pixels per metric' calibration variable
         (cnts, _) = contours.sort_contours(cnts)
         
-        # Initialization of the 'pixels per metric variable'
-        pixelsPerMetric = None
-
         # compute the rotated bounding box of the contour
         processed_frame = frame.copy()
 
         # loop over the contours individually
         for c in cnts:
-                # if the contour is not sufficiently large, ignore it
-                if cv2.contourArea(c) < 1000:
-	            continue
 
-                # compute the rotated bounding box of the contour
-                box = cv2.minAreaRect(c)
-                box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
-                box = np.array(box, dtype="int")
+            # if the contour is not sufficiently large, ignore it
+            if cv2.contourArea(c) < MinAreaThreshold:
+	        continue
+
+            hull = cv2.convexHull(c, returnPoints = True)
+
+            # compute the rotated bounding box of the contour
+            box = cv2.minAreaRect(hull)
+            box = cv2.cv.BoxPoints(box)
+            box = np.array(box, dtype="int")
     
-                # order the points in the contour such that they appear
-                # in top-left, top-right, bottom-right, and bottom-left
-                # order, then draw the outline of the rotated bounding
-                
-                # box
-                box = perspective.order_points(box)
-                cv2.drawContours(processed_frame, [box.astype("int")], -1, (0, 255, 0), 2)
-    
-                # loop over the processed_frame points and draw them
-                for (x, y) in box:
-                    cv2.circle(processed_frame, (int(x), int(y)), 5, (0, 0, 255), -1)
+            # order the points in the contour such that they appear
+            # in top-left, top-right, bottom-right, and bottom-left
+            # order, then draw the outline of the rotated bounding
             
-                # unpack the ordered bounding box, then compute the midpoint
-                # between the top-left and top-right coordinates, followed by
-                # the midpoint between bottom-left and bottom-right coordinates
-                (tl, tr, br, bl) = box
-                (tltrX, tltrY) = self.midpoint(tl, tr)
-                (blbrX, blbrY) = self.midpoint(bl, br)
-                        
-                # compute the midpoint between the top-left and top-right points,
-                # followed by the midpoint between the top-righ and bottom-right
-                (tlblX, tlblY) = self.midpoint(tl, bl)
-                (trbrX, trbrY) = self.midpoint(tr, br)
+            # box
+            box = perspective.order_points(box)
+            cv2.drawContours(processed_frame, [box.astype("int")], -1, (255,224,64), 2)
+    
+            # loop over the processed_frame points and draw them
+            for (x, y) in box:
+                cv2.circle(processed_frame, (int(x), int(y)), 5, (0, 0, 255), -1)
+            
+            # unpack the ordered bounding box, then compute the midpoint
+            # between the top-left and top-right coordinates, followed by
+            # the midpoint between bottom-left and bottom-right coordinates
+            (tl, tr, br, bl) = box
+            (tltrX, tltrY) = self.midpoint(tl, tr)
+            (blbrX, blbrY) = self.midpoint(bl, br)
                 
-                # draw the midpoints on the frame
-                cv2.circle(processed_frame, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-                cv2.circle(processed_frame, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-                cv2.circle(processed_frame, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-                cv2.circle(processed_frame, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+            # compute the midpoint between the top-left and top-right points,
+            # followed by the midpoint between the top-righ and bottom-right
+            (tlblX, tlblY) = self.midpoint(tl, bl)
+            (trbrX, trbrY) = self.midpoint(tr, br)
+            
+            # draw the midpoints on the frame
+            cv2.circle(processed_frame, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+            cv2.circle(processed_frame, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+            cv2.circle(processed_frame, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+            cv2.circle(processed_frame, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
                 
-                # draw lines between the midpoints
-                cv2.line(processed_frame, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
-	                 (255, 0, 255), 2)
-                cv2.line(processed_frame, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
-	                 (255, 0, 255), 2)
+            # draw lines between the midpoints
+            cv2.line(processed_frame, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
+	             (255, 0, 255), 2)
+            cv2.line(processed_frame, (int(tlblX), int(tlblY)), (int(trbrX), int(trbrY)),
+	             (255, 0, 255), 2)
 
-                # compute the Euclidean distance between the midpoints
-                dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
-                dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
+            # compute the Euclidean distance between the midpoints
+            dA = dist.euclidean((tltrX, tltrY), (blbrX, blbrY))
+            dB = dist.euclidean((tlblX, tlblY), (trbrX, trbrY))
 
-                # if the pixels per metric has not been initialized, then
-                # compute it as the ratio of pixels to supplied metric
-                # (in this case, inches)
-                if pixelsPerMetric is None:
-                        ReferenceMeasure = rospy.get_param('~ReferenceMeasure')
-	                pixelsPerMetric = dB / ReferenceMeasure
+            # if the pixels per metric has not been initialized, then
+            # compute it as the ratio of pixels to supplied metric
+            # (in this case, inches)
+            if self.pixelsPerMetric is None:
+                ReferenceMeasure = rospy.get_param('~ReferenceMeasure')
+	        self.pixelsPerMetric = dB / ReferenceMeasure
 
-                # compute the size of the object
-                dimA = dA / pixelsPerMetric
-                dimB = dB / pixelsPerMetric
+            # compute the size of the object
+            dimA = dA / self.pixelsPerMetric
+            dimB = dB / self.pixelsPerMetric
 
-                # draw the object sizes on the frame
-                cv2.putText(processed_frame, "{:.1f}mm".format(dimA),
-		            (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
-		            0.65, (255, 255, 255), 2)
-                cv2.putText(processed_frame, "{:.1f}mm".format(dimB),
-		            (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
-		            0.65, (255, 255, 255), 2)
+            # draw the object sizes on the frame
+            cv2.putText(processed_frame, "{:.1f}mm".format(dimA),
+		        (int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
+		        0.65, (0, 0, 0), 2)
+            cv2.putText(processed_frame, "{:.1f}mm".format(dimB),
+		        (int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
+		        0.65, (0, 0, 0), 2)
 
         return processed_frame
 
