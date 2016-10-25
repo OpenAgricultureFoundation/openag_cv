@@ -69,6 +69,7 @@ class CV():
         MinThreshold = rospy.get_param('~MinThreshold')
         MaxThreshold = rospy.get_param('~MaxThreshold')
         MinAreaThreshold = rospy.get_param('~MinAreaThreshold')
+        ReferenceMeasure = rospy.get_param('~ReferenceMeasure')
         
         # perform edge detection, then perform a dilation + erosion to
         # close gaps in between object edges
@@ -147,7 +148,6 @@ class CV():
             # compute it as the ratio of pixels to supplied metric
             # (in this case, inches)
             if self.pixelsPerMetric is None:
-                ReferenceMeasure = rospy.get_param('~ReferenceMeasure')
 	        self.pixelsPerMetric = dB / ReferenceMeasure
 
             # compute the size of the object

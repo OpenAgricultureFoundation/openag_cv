@@ -3,8 +3,8 @@
   <!-- variables related to image acquisition -->
   <arg name="framerate" default="1"/>
   <arg name="width" default="1280"/>
-  <arg name="height" default="960"/>
-  <arg name="camera_model" default="elp1_3"/>
+  <arg name="height" default="1024"/>
+  <arg name="camera_model" default="elp5"/>
 
   <!-- variables related to image processing and OpenCV -->
   <arg name="ObjectMeasurerInputTopic" value="/cameras"/>
@@ -23,7 +23,7 @@
 
   <!-- cameras -->
   <group ns="cameras">
-    <node machine="Dionysus" name="top" pkg="usb_cam" type="usb_cam_node">
+    <node machine="Chloris" name="top" pkg="usb_cam" type="usb_cam_node">
       <param name="video_device" value="/dev/video0" />
       <param name="image_width" value="$(arg width)" />
       <param name="image_height" value="$(arg height)" />
@@ -36,7 +36,7 @@
 	     value="file://$(find openag_ros)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
     </node>
 
-    <node machine="Dionysus" name="side" pkg="usb_cam" type="usb_cam_node">
+    <node machine="Chloris" name="side" pkg="usb_cam" type="usb_cam_node">
       <param name="video_device" value="/dev/video1" />
       <param name="image_width" value="$(arg width)" />
       <param name="image_height" value="$(arg height)" />

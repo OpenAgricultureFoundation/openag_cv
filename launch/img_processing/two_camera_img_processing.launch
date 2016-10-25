@@ -8,6 +8,7 @@
 	  args="$(arg topic)$(arg position)$(arg image)">
       <param name="MinThreshold" value="200"/>
       <param name="MaxThreshold" value="255"/>
+      <param name="MinAreaThreshold" value="1000"/>
       <param name="ReferenceMeasure" value="20"/>      
     </node>    
 
