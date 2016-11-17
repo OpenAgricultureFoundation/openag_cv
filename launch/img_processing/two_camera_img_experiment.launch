@@ -33,7 +33,7 @@
       <param name="camera_name" value="top"/>
       <param name="io_method" value="mmap"/>
       <param name="camera_info_url" type="string"
-	     value="file://$(find openag_ros)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
+	     value="file://$(find openag_cv)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
     </node>
 
     <node machine="Chloris" name="side" pkg="usb_cam" type="usb_cam_node">
@@ -46,7 +46,7 @@
       <param name="camera_name" value="side" />
       <param name="io_method" value="mmap"/>
       <param name="camera_info_url" type="string"
-	     value="file://$(find openag_ros)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
+	     value="file://$(find openag_cv)/data/camera_calibration/$(arg camera_model)/$(arg width)x$(arg height).yaml"/>
     </node>
   </group>
 
@@ -56,7 +56,7 @@
 
   <!-- image processing : Object Measurer -->    
   <include file="$(find
-		 openag_ros)/launch/img_processing/two_camera_img_processing.launch">
+		 openag_cv)/launch/img_processing/two_camera_img_processing.launch">
 
     <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
     <arg name="position" value="/top"/>
@@ -64,7 +64,7 @@
   </include>
 
   <include file="$(find
-		 openag_ros)/launch/img_processing/two_camera_img_processing.launch">
+		 openag_cv)/launch/img_processing/two_camera_img_processing.launch">
 
     <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
     <arg name="position" value="/side"/>

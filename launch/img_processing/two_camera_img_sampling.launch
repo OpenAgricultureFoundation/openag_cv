@@ -7,10 +7,10 @@
 
   <include file="$(find roslaunch)/stereo_camera_img_acquisition.launch" />
 
-  <node name="camera_top_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
+  <node name="camera_top_subscriber" pkg="openag_cv" type="CameraSubscriber.py"
 	args="$(arg frequency) /cameras/top/image_raw"/>
   
-  <node name="camera_side_subscriber" pkg="openag_ros" type="CameraSubscriber.py"
+  <node name="camera_side_subscriber" pkg="openag_cv" type="CameraSubscriber.py"
 	args="$(arg frequency) /cameras/side/image_raw"/>
 
   <node pkg="rosbag" type="record" name="record" output="screen" 

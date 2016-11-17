@@ -4,7 +4,7 @@
   <arg name="image" default=""/>
   
   <group ns="$(arg topic)$(arg position)$(arg image)">
-    <node name="ObjectMeasurer" pkg="openag_ros" type="ObjectMeasurer.py"
+    <node name="ObjectMeasurer" pkg="openag_cv" type="ObjectMeasurer.py"
 	  args="$(arg topic)$(arg position)$(arg image)">
       <param name="MinThreshold" value="200"/>
       <param name="MaxThreshold" value="255"/>
@@ -12,7 +12,7 @@
       <param name="ReferenceMeasure" value="20"/>      
     </node>    
 
-    <node name="EdgeDetector" pkg="openag_ros" type="EdgeDetector.py"
+    <node name="EdgeDetector" pkg="openag_cv" type="EdgeDetector.py"
 	  args="$(arg topic)$(arg position)$(arg image)">
             <param name="MinThreshold" value="200"/>
 	    <param name="MaxThreshold" value="255"/>
