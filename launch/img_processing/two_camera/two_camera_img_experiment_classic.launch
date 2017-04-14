@@ -1,0 +1,33 @@
+<launch>
+
+  <!-- variables related to image acquisition -->
+  <arg name="framerate" default="1"/>
+  <arg name="width" default="1280"/>
+  <arg name="height" default="1024"/>
+  <arg name="camera_model" default="elp5"/>
+
+  <!-- variables related to image processing and OpenCV -->
+  <arg name="ObjectMeasurerInputTopic" value="/cameras"/>
+  <arg name="ObjectMeasurerImageTopic" value="/image_rect_color"/>
+
+  <!-- image rectification -->  
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/top"/>
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/side"/>
+
+  <!-- image processing : Object Measurer -->    
+  <include file="$(find
+		 openag_cv)/launch/img_processing/two_camera/two_camera_img_processing.launch">
+
+    <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
+    <arg name="position" value="/top"/>
+    <arg name="image" value="$(arg ObjectMeasurerImageTopic)"/>
+  </include>
+
+  <include file="$(find
+		 openag_cv)/launch/img_processing/two_camera/two_camera_img_processing.launch">
+
+    <arg name="topic" value="$(arg ObjectMeasurerInputTopic)"/>
+    <arg name="position" value="/side"/>
+    <arg name="image" value="$(arg ObjectMeasurerImageTopic)"/>
+  </include>
+</launch>
