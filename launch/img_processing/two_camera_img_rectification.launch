@@ -1,0 +1,5 @@
+<launch>
+  <!-- image rectification -->  
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/top"/>
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="cameras/side"/>
+</launch>

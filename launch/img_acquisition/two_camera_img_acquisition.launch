@@ -1,8 +1,8 @@
 <launch>
   <arg name="framerate" default="1"/>
   <arg name="width" default="1280"/>
-  <arg name="height" default="960"/>
-  <arg name="camera_model" default="elp1_3"/>
+  <arg name="height" default="1024"/>
+  <arg name="camera_model" default="elp5"/>
   
   <group ns="cameras">
     <node name="top" pkg="usb_cam" type="usb_cam_node">

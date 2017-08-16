@@ -1,0 +1,43 @@
+<launch>
+
+  <!-- Launch image acquisition -->    
+  <include file="$(find
+  		 openag_cv)/launch/img_acquisition/two_camera_img_acquisition.launch"/>
+
+  <!-- Launch image rectification -->    
+  <include file="$(find
+  		 openag_cv)/launch/img_processing/two_camera_img_rectification.launch"/>
+
+  <!-- Mask Plant Tray (Top view only) -->      
+  <node name="MaskPlantTray" pkg="openag_cv" type="MaskPlantTray.py" ns="cameras/top" args="image_rect_color"/>
+
+  <!-- variables related to image processing and OpenCV -->
+  <arg name="InputTopic" value="/cameras"/>
+  <arg name="InputPosition" value="/top"/>
+  <arg name="ImageTopic" value="/image_rect_color/MaskPlantTray"/>
+  
+  <!-- image processing : Object Measurer -->    
+  <include file="$(find openag_cv)/launch/img_processing/object_measurer.launch">
+    <arg name="topic" value="$(arg InputTopic)"/>
+    <arg name="position" value="$(arg InputPosition)"/>
+    <arg name="image" value="$(arg ImageTopic)"/>
+  </include>
+
+  <!-- image processing : Blob Detector -->    
+  <include file="$(find openag_cv)/launch/img_processing/blob_detector.launch">
+    <arg name="topic" value="$(arg InputTopic)"/>
+    <arg name="position" value="$(arg InputPosition)"/>
+    <arg name="image" value="$(arg ImageTopic)"/>
+  </include>
+  
+  <!-- First Image Merger -->      
+  <node name="Merger1" pkg="openag_cv" type="Merger.py"
+	ns="cameras/top" args="image_rect_color
+			       image_rect_color/MaskPlantTray/ObjectMeasurer
+			       image_rect_color/ObjectDetectorFinal"/>
+  <!-- Second Image Merger -->      
+  <node name="Merger2" pkg="openag_cv" type="Merger.py"
+	ns="cameras/top" args="image_rect_color/ObjectDetectorFinal
+			       image_rect_color/MaskPlantTray/BlobDetector
+			       image_rect_color/ObjectDetectorAndBlobDetector"/>
+</launch>

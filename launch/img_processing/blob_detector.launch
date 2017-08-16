@@ -1,0 +1,30 @@
+<launch>
+  <arg name="topic" default=""/>
+  <arg name="position" default=""/>
+  <arg name="image" default=""/>
+  
+  <group ns="$(arg topic)$(arg position)$(arg image)">
+    <node name="BlobDetector" pkg="openag_cv" type="BlobDetector.py"
+	  args="$(arg topic)$(arg position)$(arg image)">
+
+      <param name="FilterByColor" type="bool" value="False"/>
+      <param name="BlobColor" value="1"/>
+
+      <param name="FilterByArea" type="bool" value="True"/>
+      <param name="BlobMaxArea" value="4500"/>
+
+      <param name="FilterByCircularity" type="bool" value="True"/>
+      <param name="BlobMinCircularity" value="0.01"/>
+      <param name="BlobMaxCircularity" value="1"/>
+
+      <param name="FilterByConvexity" type="bool" value="True"/>
+      <param name="BlobMinConvexity" value="0.01"/>
+      <param name="BlobMaxConvexity" value="1"/>
+
+      <param name="FilterByInertia" type="bool" value="True"/>
+      <param name="BlobMinInertia" value="0.10"/>
+      <param name="BlobMaxInertia" value="1"/>
+
+    </node>    
+  </group>  
+</launch>

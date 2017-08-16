@@ -39,31 +39,27 @@ class cvBridge():
         params = cv2.SimpleBlobDetector_Params()
 
         # Filter by Color.
-        # params.filterByColor = True
-        # params.blobColor = 1
-
-        # Change thresholds
-        # params.minThreshold = 1
-        # params.maxThreshold = 255
+        params.filterByColor = rospy.get_param('~FilterByColor')
+        params.blobColor = rospy.get_param('~BlobColor')
 
         # Filter by Area.
-        params.filterByArea = True
-        params.maxArea = 4500
+        params.filterByArea = rospy.get_param('~FilterByArea')
+        params.maxArea = rospy.get_param('~BlobMaxArea')
 
         # Filter by Circularity
-        params.filterByCircularity = True
-        params.minCircularity = 0.01
-        params.maxCircularity = 1
+        params.filterByCircularity = rospy.get_param('~FilterByCircularity')
+        params.minCircularity = rospy.get_param('~BlobMinCircularity')
+        params.maxCircularity = rospy.get_param('~BlobMaxCircularity')
 
         # Filter by Convexity
-        params.filterByConvexity = True
-        params.minConvexity = 0.01
-        params.maxConvexity = 1
+        params.filterByConvexity = rospy.get_param('~FilterByConvexity')
+        params.minConvexity = rospy.get_param('~BlobMinConvexity')
+        params.maxConvexity = rospy.get_param('~BlobMaxConvexity')
 
         # Filter by Inertia
-        params.filterByInertia = True
-        params.minInertiaRatio = 0.10
-        params.maxInertiaRatio = 1
+        params.filterByInertia = rospy.get_param('~FilterByInertia')
+        params.minInertiaRatio = rospy.get_param('~BlobMinInertia')
+        params.maxInertiaRatio = rospy.get_param('~BlobMaxInertia')
 
         self.MaxLeavesSocketA = [0]
         self.MaxLeavesSocketB = [0]
@@ -157,10 +153,10 @@ class cvBridge():
                              ), cv2.FONT_HERSHEY_SIMPLEX,
                             0.65, (255, 0, 0), 2)
 
-        for key, value in leaves_data.iteritems():
-            print leaves_data[key][2]
+        # for key, value in leaves_data.iteritems():
+        #     print leaves_data[key][2]
 
-        print "--------------"
+        # print "--------------"
 
         return frame
 
