@@ -57,8 +57,8 @@ class cvBridge():
         height, width = frame.shape[:2]
         mask = np.zeros((height, width), np.uint8)
 
-        cv2.rectangle(mask, (width / 3 + 10, height / 3 - 120),
-                      (width * 2 / 3, height * 2 / 3 - 20), [255, 255, 255], thickness=-1)
+        cv2.rectangle(mask, (width / 3 + 10, height / 3 - 130),
+                      (width * 2 / 3 + 10, height * 2 / 3 - 10), [255, 255, 255], thickness=-1)
 
         masked_img = cv2.bitwise_and(frame, frame, mask=mask)
         return masked_img

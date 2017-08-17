@@ -11,6 +11,7 @@
       <param name="BlobColor" value="1"/>
 
       <param name="FilterByArea" type="bool" value="True"/>
+      <param name="BlobMinArea" value="0"/>
       <param name="BlobMaxArea" value="4500"/>
 
       <param name="FilterByCircularity" type="bool" value="True"/>

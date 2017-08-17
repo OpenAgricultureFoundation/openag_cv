@@ -44,6 +44,7 @@ class cvBridge():
 
         # Filter by Area.
         params.filterByArea = rospy.get_param('~FilterByArea')
+        params.minArea = rospy.get_param('~BlobMinArea')
         params.maxArea = rospy.get_param('~BlobMaxArea')
 
         # Filter by Circularity
