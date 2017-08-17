@@ -1,8 +1,8 @@
 <launch>
 
   <!-- Launch image acquisition -->    
-  <!-- <include file="$(find -->
-  <!-- 		 openag_cv)/launch/img_acquisition/two_camera_img_acquisition.launch"/> -->
+  <include file="$(find 
+   		 openag_cv)/launch/img_acquisition/two_camera_img_acquisition.launch"/> 
 
   <!-- Launch image rectification -->    
   <include file="$(find
