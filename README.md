@@ -25,9 +25,9 @@ The default values for the parameters in these launch files are:
 -   framerate = 1
 -   width = 1280
 -   height = 1024
--   camera<sub>model</sub> = elp5
+-   camera_model = elp5
 
-    Note: This is required to load the calibration parameters located in the data/camera<sub>calibration</sub>/ folder. For more information about how to create calibration files please take a look [here](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration).
+    Note: This is required to load the calibration parameters located in the data/camera_calibration/ folder. For more information about how to create calibration files please take a look [here](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration).
 
 Overriding the default parameter values
 ---------------------------------------
@@ -45,8 +45,8 @@ Camera image topics
 
 After successfully run this file you should be able to access to both image topics within your ros system:
 
--   /cameras/top/image<sub>raw</sub>
--   /cameras/side/image<sub>raw</sub>
+-   /cameras/top/image_raw
+-   /cameras/side/image_raw
 
 You can check if the cameras are sending information to their respective topics with the following command:
 
